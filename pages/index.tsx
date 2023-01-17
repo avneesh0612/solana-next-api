@@ -1,9 +1,8 @@
+import { useWallet } from "@solana/wallet-adapter-react";
 import type { NextPage } from "next";
 import dynamic from "next/dynamic";
-import Image from "next/image";
+import { useState } from "react";
 import styles from "../styles/Home.module.css";
-
-// Default styles that can be overridden by your app
 require("@solana/wallet-adapter-react-ui/styles.css");
 
 const WalletMultiButtonDynamic = dynamic(
@@ -13,52 +12,45 @@ const WalletMultiButtonDynamic = dynamic(
 );
 
 const Home: NextPage = () => {
-  // Here's how to get the thirdweb SDK instance
-  // const sdk = useSDK();
-  // Here's how to get a nft collection
-  // const { program } = useProgram(
-  //   your_nft_collection_address,
-  //   "nft-collection"
-  // );
+  const { publicKey } = useWallet();
+  const [nftAddress, setNftAddress] = useState<string>(
+    "CuHz73qMYVoPirX9eo5Gg6T9u96cE7PNQg5Cbx9dqnfA"
+  );
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const mint = async () => {
+    if (!publicKey) return alert("Connect your wallet first");
+    setLoading(true);
+    const res = await fetch("/api/mint", {
+      method: "POST",
+      body: JSON.stringify({ address: publicKey }),
+    });
+
+    const data = await res.json();
+    console.log(data);
+    setNftAddress(data.nft);
+    setLoading(false);
+  };
 
   return (
     <>
       <div className={styles.container}>
-        <div className={styles.iconContainer}>
-          <Image
-            src="/thirdweb.svg"
-            height={75}
-            width={115}
-            style={{
-              objectFit: "contain",
-            }}
-            alt="thirdweb"
-          />
-          <Image
-            width={75}
-            height={75}
-            src="/sol.png"
-            className={styles.icon}
-            alt="sol"
-          />
-        </div>
-        <h1 className={styles.h1}>Solana, meet thirdweb 👋</h1>
-        <p className={styles.explain}>
-          Explore what you can do with thirdweb&rsquo;s brand new{" "}
-          <b>
-            <a
-              href="https://portal.thirdweb.com/solana"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.lightPurple}
-            >
-              Solana SDK
-            </a>
-          </b>
-          .
-        </p>
-
         <WalletMultiButtonDynamic />
+
+        <button onClick={mint} className={styles.mainButton} disabled={loading}>
+          {loading ? "Loading..." : "Mint NFT"}
+        </button>
+
+        {nftAddress && (
+          <a
+            href={`https://explorer.solana.com/address/${nftAddress}?cluster=devnet`}
+            target="_blank"
+            rel="noreferrer"
+            className={styles.nftLink}
+          >
+            NFT minted successfully! View NFT
+          </a>
+        )}
       </div>
     </>
   );
