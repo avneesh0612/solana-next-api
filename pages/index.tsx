@@ -13,10 +13,9 @@ const WalletMultiButtonDynamic = dynamic(
 
 const Home: NextPage = () => {
   const { publicKey } = useWallet();
-  const [nftAddress, setNftAddress] = useState<string>(
-    "CuHz73qMYVoPirX9eo5Gg6T9u96cE7PNQg5Cbx9dqnfA"
-  );
+  const [nftAddress, setNftAddress] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const mint = async () => {
     if (!publicKey) return alert("Connect your wallet first");
@@ -27,7 +26,12 @@ const Home: NextPage = () => {
     });
 
     const data = await res.json();
-    console.log(data);
+    if (data.error) {
+      setLoading(false);
+      return setError(data.error);
+    }
+
+    setError(null);
     setNftAddress(data.nft);
     setLoading(false);
   };
@@ -51,6 +55,7 @@ const Home: NextPage = () => {
             NFT minted successfully! View NFT
           </a>
         )}
+        {error && <p className={styles.error}>{error}</p>}
       </div>
     </>
   );

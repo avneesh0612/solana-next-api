@@ -44,3 +44,9 @@
   font-weight: 600;
   margin-top: 20px;
 }
+
+.error {
+  color: red;
+  font-weight: 600;
+  margin-top: 20px;
+}

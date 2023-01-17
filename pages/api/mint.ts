@@ -19,7 +19,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     description: "This is a test NFT",
   };
 
+  const nfts = await collection?.getAll();
+
+  const hasNFT = nfts?.some((nft) => nft.owner === address);
+
   try {
+    if (hasNFT) {
+      return res.status(400).json({
+        success: false,
+        error: "You already have an NFT!",
+      });
+    }
+
     const nft = await collection.mintTo(address, metadata);
     console.log(nft);
     return res.status(200).json({
