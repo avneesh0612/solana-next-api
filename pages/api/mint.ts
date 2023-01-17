@@ -26,7 +26,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     if (hasNFT) {
       return res.status(400).json({
-        success: false,
         error: "You already have an NFT!",
       });
     }
@@ -35,13 +34,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     console.log(nft);
     return res.status(200).json({
       nft,
-      success: true,
     });
   } catch (e) {
     console.log(e);
     return res.status(500).json({
-      success: false,
-      error: e,
+      error: String(e),
     });
   }
 };

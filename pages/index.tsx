@@ -15,7 +15,7 @@ const Home: NextPage = () => {
   const { publicKey } = useWallet();
   const [nftAddress, setNftAddress] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>("");
 
   const mint = async () => {
     if (!publicKey) return alert("Connect your wallet first");
@@ -28,10 +28,10 @@ const Home: NextPage = () => {
     const data = await res.json();
     if (data.error) {
       setLoading(false);
-      return setError(data.error);
+      return setError((data.error));
     }
 
-    setError(null);
+    setError("");
     setNftAddress(data.nft);
     setLoading(false);
   };
@@ -55,6 +55,7 @@ const Home: NextPage = () => {
             NFT minted successfully! View NFT
           </a>
         )}
+
         {error && <p className={styles.error}>{error}</p>}
       </div>
     </>
